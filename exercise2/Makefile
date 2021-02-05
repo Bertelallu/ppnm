@@ -1,3 +1,6 @@
+default: out.txt
+	cat out.txt
+
 out.txt: hello
 	./hello >out.txt
 
