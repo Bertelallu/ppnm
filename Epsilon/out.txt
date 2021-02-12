@@ -1,4 +1,0 @@
-my min int = -2147483648
-my min int = -2147483648
-my min int = -2147483648
-But INT_MIN=-2.14748e+09
