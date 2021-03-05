@@ -1,0 +1,8 @@
+set term pdf
+set width 12
+set xlabel "$x$"
+set ylabel "$y$"
+set output "fig-exp-pyxplot.pdf"
+plot [0:5] "out.data.txt" using 1:2 with lines title "algorithm from approximation" \
+,"out.data.txt" using 1:3 with lines title "algorithm from math.h"
+
