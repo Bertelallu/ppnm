@@ -3,11 +3,14 @@ CFLAGS += $(shell /usr/bin/gsl-config --cflags)
 LDLIBS += $(shell /usr/bin/gsl-config --libs)
 
 .PHONEY:all
-all:main
+all:out.txt
+
+out.txt: main
+	./$< > $@
 
 .PHONEY:clean
 clean:
-	$(RM) main
+	$(RM) main out.txt
 
 test:
 	@echo $(CFLAGS)
