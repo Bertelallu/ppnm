@@ -31,7 +31,12 @@ And so on, until the equation becomes
 	\end{equation}
 For small x, it is reasonable that this function is a good approximation as $x^{10}$ is much smaller than !10.
 In the algorithm this is explotied with the statement if(x>1./8)return pow(exp(x/2),2). This ensures that the function
-is calculated precisely even as x becomes large.
+is calculated precisely even as x becomes large, as the following holds:
+	\begin{equation}\label{eq:note1}
+\exp (x) := exp(\frac{x}{2})^2=exp(\frac{x}{4})^4=...\;.
+	\end{equation}
+By repeating this n times, an input 'x' to the algorithm will be given that is sufficiently small, that the approximation of the alogrithm is good.
+The acutal exp(x) is found as $exp(\frac{x}{2n})^{2n}$
 
 The algorithm is plotted from x=0-5 in figure along with the algorithm from math.h. 
 \section{Figures}
@@ -46,4 +51,5 @@ There is clear overlap between the two algorithms, and they must be nealy identi
 \end{thebibliography}
 
 \end{document}
+
 
