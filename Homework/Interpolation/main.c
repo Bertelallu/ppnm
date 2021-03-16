@@ -2,49 +2,29 @@
 #include<stdio.h>
 #include<gsl/gsl_vector.h>
 #include<assert.h>
+#include <gsl/gsl_interp.h>
 
+int binsearch(int n,gsl_vector *x,double Z);
+typedef struct {gsl_vector *x, *y, *b, *c;} qspline;
+typedef struct {gsl_vector *x, *y, *b, *c, *d;} cubic_spline;
+
+qspline* qspline_alloc(gsl_vector *x, gsl_vector* y);
+cubic_spline* cubic_spline_alloc(gsl_vector *x, gsl_vector* y);
 
 double linterp(gsl_vector * x,gsl_vector * y, double Z);
 double linterp_integ(gsl_vector *x,gsl_vector *y, double Z);
-int binsearch(int n,gsl_vector *x,double Z);
-typedef struct {gsl_vector *x, *y, *b, *c;} qspline;
 
-qspline* qspline_alloc(gsl_vector *x, gsl_vector* y){
-	qspline *s=(qspline*)malloc(sizeof(qspline));
-	s->b=gsl_vector_alloc((x->size)-1);
-	s->c=gsl_vector_alloc((x->size)-1);
-	s->x=gsl_vector_alloc(x->size);
-	s->y=gsl_vector_alloc(x->size);
-	s->x=x; s->y=y;
-	int i; gsl_vector * h=gsl_vector_alloc((x->size)-1); gsl_vector * p=gsl_vector_alloc((x->size)-1);
+double qspline_eval(qspline *s, double z);
+double quad_integ(qspline *s, double z);
+double quad_diff(qspline *s,double z);
 
-	for(i=0;i<(x->size)-1;i++){
-	gsl_vector_set(h,i,gsl_vector_get(x,i+1)-gsl_vector_get(x,i));
-	gsl_vector_set(p,i,(gsl_vector_get(y,i+1)-gsl_vector_get(y,i))/gsl_vector_get(h,i));
-	}
-	gsl_vector_set(s->c,0,0);
 
-	for(i=0;i<(x->size)-2;i++){
-	gsl_vector_set(s->c,i+1,(gsl_vector_get(p,i+1)-gsl_vector_get(p,i)-gsl_vector_get(s->c,i)*gsl_vector_get(h,i))/gsl_vector_get(h,i+1));
-	}
-	gsl_vector_set(s->c,x->size-2,gsl_vector_get(s->c,i-2)/2);
+double cubic_spline_eval(cubic_spline*s, double z);
+//double cubic_integ();
+//double cubic_diff();
 
-	for(i=x->size-3;i>=0;i--){gsl_vector_set(s->c,i,(gsl_vector_get(p,i+1)-gsl_vector_get(p,i)-gsl_vector_get(s->c,i+1)*gsl_vector_get(h,i+1))/gsl_vector_get(h,i));
-	}
-	for(i=0;i<x->size-1;i++){gsl_vector_set(s->b,i,gsl_vector_get(p,i)-gsl_vector_get(s->c,i)*gsl_vector_get(h,i));
-	}
-return s;
-}
-
-double qspline_eval(qspline *s, double z){
-	int index=binsearch(s->x->size,s->x,z);
-	double h=z-gsl_vector_get(s->x,index);
-	return gsl_vector_get(s->y,index)+h*(gsl_vector_get(s->b,index)+h*gsl_vector_get(s->c,index));
-}
-//double spline_integ_quad();
-
-void spline_free(qspline *s){
-	free(s->x); free(s->y); free(s->b); free(s->x); free(s);}
+void quad_spline_free(qspline *s);
+void cubic_spline_free(cubic_spline *s);
 
 int main(){
 //	int N=10;
@@ -67,12 +47,6 @@ int main(){
 	gsl_vector * x = gsl_vector_alloc (N);
 	gsl_vector * y = gsl_vector_alloc (N);
 
-/*	for(int i=0;i<=N;i++)
-		{
-		gsl_vector_set (x, i, i);
-		gsl_vector_set (y, i, 1);
-		}
-*/
 
 //loader punkter fra fil ind i vektorerner x og y.
 	double i;
@@ -86,21 +60,39 @@ int main(){
 		n++;
 		}
 	fclose(my_in_stream);
-//	for(int n=0;n<N;n++) printf("%g %g\n",gsl_vector_get(x,n),gsl_vector_get(y,n));
-//A linear interpolation is done on the points loaded in vectors x and y.
+
+// GSL linear interpolator.
+	double gslx[N],gsly[N];
+
+	for(int i=0;i<N;i++){
+		gslx[i]=gsl_vector_get(x,i);
+		gsly[i]=gsl_vector_get(y,i);
+	}
+	gsl_interp* linear= gsl_interp_alloc(gsl_interp_linear,N);
+	gsl_interp_init(linear,gslx,gsly,N);
+
+//A linear, quad, and cubic interpolation is done on the points loaded in vectors x and y.
 //The values are written into a file linterp.dat. Along with the integral top that point.
 	FILE * f=fopen("linterp.dat","w");
 	double z=gsl_vector_get(x,0);
 	qspline *s=qspline_alloc(x,y);
+//cubic_spline *ss=cubic_spline_alloc(x,y);
 	for((z=z);z<=N;z+=1./8){
 		double yiz=linterp(x,y,z);
-		double integraltilz=linterp_integ(x,y,z); 
+		double integraltilz=linterp_integ(x,y,z);
 		double quadterp=qspline_eval(s,z);
-		fprintf(f,"%g %g %g %g\n",z,yiz,integraltilz,quadterp);
+		double quadterptilz=quad_integ(s,z);
+		double quadterpdiffiz=quad_diff(s,z);
+		double interp_l=gsl_interp_eval(linear,gslx,gsly,z,NULL);
+		double integ_l=gsl_interp_eval_integ(linear,gslx,gsly,gslx[0],z,NULL);
+//double cubicterp=cubic_spline_eval(ss,z);
+		fprintf(f,"%g %g %g %g %g %g %g %g\n",z,yiz,integraltilz,quadterp,quadterptilz,quadterpdiffiz,interp_l,integ_l);
 		}
 	fclose(f);
 
-
+//quad_spline_free(s);
+//cubic_spline_free(ss);
+gsl_interp_free(linear);
 gsl_vector_free (x);
 gsl_vector_free (y);
 return 0;

@@ -6,7 +6,7 @@ CC=gcc
 .PHONEY:default
 default:main fig-linterp-pyxplot.png
 
-main: main.c linterp.c linterp_integ.c binsearch.c
+main: main.c linterp.c linterp_integ.c binsearch.c cubic.c quad.c quad_integ.c quad_diff.c
 
 fig-linterp-pyxplot.png: fig-linterp-pyxplot.gpi linterp.dat
 	pyxplot $<
