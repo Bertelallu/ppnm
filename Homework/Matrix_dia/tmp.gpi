@@ -1,0 +1,13 @@
+\
+set terminal png;\
+set output "timediagonalization.pyxplot.png";\
+set key top left;\
+set tics out;\
+set xlabel "N";\
+set ylabel "Time (s)";\
+set title "Our function";\
+plot \
+"out_time_jacobi.txt" using 1:2 with line title "Our implementation"\
+,"out_time_gsl.txt" using 1:2 with line title "GSL"\
+,"out_time_jacobiop.txt" using 1:2 with line title "Our optimized implementation"\
+
