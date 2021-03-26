@@ -4,6 +4,7 @@
 #include<gsl/gsl_linalg.h>
 #include<gsl/gsl_vector.h>
 #include <stdio.h>
+#include<gsl/gsl_eigen.h>
 
 void GenerateMatrix(gsl_matrix* A, int N) {
     
@@ -74,20 +75,41 @@ do{
 }
 
 
-void Jtimeshalf(gsl_matrix* A, int p, int q, double theta){
-	double c=cos(theta),s=sin(theta);
-	printf("\n%g\n", theta);
-	for(int j=0;j<A->size2;j++){
-		double new_apj= c*gsl_matrix_get(A,p,j)+s*gsl_matrix_get(A,q,j);
-		//printf("p=%d, j=%d, værdi=%g\n",j,p,new_apj);
-		
-		double new_aqj=-s*gsl_matrix_get(A,p,j)+c*gsl_matrix_get(A,q,j);
-		//printf("q=%d, j=%d værdi=%g\n",q,j,new_aqj);
-		
-		gsl_matrix_set(A,p,j,new_apj);
-		gsl_matrix_set(A,q,j,new_aqj);
-		}
+void JtAJ(gsl_matrix* A, int p, int q, double theta) {
+   double c = cos(theta);
+   double s = sin(theta);
+
+   double apq = gsl_matrix_get(A, p, q);
+   double app = gsl_matrix_get(A, p, p);
+   double aqq = gsl_matrix_get(A, q, q);
+   gsl_matrix_set(A, p, q, 0);
+   gsl_matrix_set(A, p, p, c*c*app - 2*s*c*apq + s*s*aqq);
+   gsl_matrix_set(A, q, q, s*s*app + 2*s*c*apq + c*c*aqq);
+
+   // loop over remaining upper triangle elements in columns p, q and rows p, q
+   for (int i = 0; i < p; ++i) {
+      double aip = gsl_matrix_get(A, i, p);
+      double aiq = gsl_matrix_get(A, i, q);
+      gsl_matrix_set(A, i, p, c*aip - s*aiq);
+      gsl_matrix_set(A, i, q, s*aip + c*aiq);
+   }
+
+   for (int i = p + 1; i < q; ++i) {
+      double api = gsl_matrix_get(A, p, i);
+      double aiq = gsl_matrix_get(A, i, q);
+      gsl_matrix_set(A, p, i, c*api - s*aiq);
+      gsl_matrix_set(A, i, q, s*api + c*aiq);
+   }
+
+   for (int i = q + 1; i < A->size1; ++i) {
+      double api = gsl_matrix_get(A, p, i);
+      double aqi = gsl_matrix_get(A, q, i);
+      gsl_matrix_set(A, p, i, c*api - s*aqi);
+      gsl_matrix_set(A, q, i, s*api + c*aqi);
+   }
+
 }
+
 
 void jacobi_diag_op(gsl_matrix* A, gsl_matrix* V){
 int changed;
@@ -105,13 +127,12 @@ do{
 		if(new_app!=app || new_aqq!=aqq) // do rotation
 			{
 			changed=1;
-			timesJ(A,p,q, theta);
-			Jtimeshalf(A,p,q,-theta); // A←J^T*A*J 
+			JtAJ(A, p, q, theta); // A <- Jt*A*J
 			timesJ(V,p,q, theta); // V←V*J
 			}
 		
 	}
-matrix_print("A=",A);
+
 }while(changed!=0);
 }
 
@@ -139,14 +160,11 @@ double exact(double x, int n){
 
 
 void MeasureTime(int Nmin,int Nmax) {
-	printf("start");
     FILE * f3=fopen("out_time_jacobi.txt","w");    
     FILE * f4=fopen("out_time_gsl.txt","w");
 	FILE * f5=fopen("out_time_jacobiop.txt","w");
 	
-	printf("1\n");
     for (int N=Nmin; N<Nmax; N += 5){
-//	printf("ind, %d\n",N1);
 
 		gsl_matrix* A = gsl_matrix_alloc(N, N); 
 		gsl_matrix* A1 = gsl_matrix_alloc(N+1, N+1); 
@@ -171,7 +189,6 @@ void MeasureTime(int Nmin,int Nmax) {
      	gsl_matrix_set_identity(V2); 
      	gsl_matrix_set_identity(V3); 
      	gsl_matrix_set_identity(V4); 
-//		printf("3\n");
         
 		clock_t begin = clock(); 
         jacobi_diag(A,V);        
@@ -180,9 +197,8 @@ void MeasureTime(int Nmin,int Nmax) {
         jacobi_diag(A3,V3);        
         jacobi_diag(A4,V4);        
 		clock_t end = clock();
-        
         fprintf(f3, "%3d  %Lf \n", N, (long double)(end - begin) / CLOCKS_PER_SEC);
-//		printf("4");
+
 		
 		gsl_matrix* W = gsl_matrix_alloc(N, N); 
 		gsl_matrix* W1 = gsl_matrix_alloc(N+1, N+1); 
@@ -196,26 +212,31 @@ void MeasureTime(int Nmin,int Nmax) {
 		gsl_vector *S3=gsl_vector_alloc(N+3);
 		gsl_vector *S4=gsl_vector_alloc(N+4);
 		
-        GenerateMatrix(A, N);
+		gsl_eigen_symmv_workspace* w = gsl_eigen_symmv_alloc(N);
+		gsl_eigen_symmv_workspace* w1 = gsl_eigen_symmv_alloc(N+1);
+		gsl_eigen_symmv_workspace* w2 = gsl_eigen_symmv_alloc(N+2);
+		gsl_eigen_symmv_workspace* w3 = gsl_eigen_symmv_alloc(N+3);
+		gsl_eigen_symmv_workspace* w4 = gsl_eigen_symmv_alloc(N+4);
+
+        
+		GenerateMatrix(A, N);
         GenerateMatrix(A1, N+1);
         GenerateMatrix(A2, N+2);
         GenerateMatrix(A3, N+3);
         GenerateMatrix(A4, N+4); 
 
-//		printf("5");
-        clock_t begin_gsl = clock(); 
-   
-		gsl_linalg_SV_decomp_jacobi(A, W, S);
-		gsl_linalg_SV_decomp_jacobi(A1, W1, S1);
-		gsl_linalg_SV_decomp_jacobi(A2, W2, S2);
-		gsl_linalg_SV_decomp_jacobi(A3, W3, S3);
-		gsl_linalg_SV_decomp_jacobi(A4, W4, S4);
 
-        clock_t end_gsl = clock();
+        clock_t begin_gsl = clock(); 
+        gsl_eigen_symmv(A, S, W, w);
+        gsl_eigen_symmv(A1, S1, W1, w1);
+        gsl_eigen_symmv(A2, S2, W2, w2);
+        gsl_eigen_symmv(A3, S3, W3, w3);
+        gsl_eigen_symmv(A4, S4, W4, w4);
+		clock_t end_gsl = clock();
         fprintf(f4, "%3d  %Lf \n", N, (long double)(end_gsl - begin_gsl) / CLOCKS_PER_SEC);
-//  		printf("6");
-		
-		        GenerateMatrix(A, N);
+        
+
+		GenerateMatrix(A, N);
         GenerateMatrix(A1, N+1);
         GenerateMatrix(A2, N+2);
         GenerateMatrix(A3, N+3);
@@ -261,8 +282,15 @@ void MeasureTime(int Nmin,int Nmax) {
         gsl_vector_free(S2);
         gsl_vector_free(S3);
         gsl_vector_free(S4);
-		}
+		
     
+		gsl_eigen_symmv_free(w);
+		gsl_eigen_symmv_free(w1);
+		gsl_eigen_symmv_free(w2);
+		gsl_eigen_symmv_free(w3);
+		gsl_eigen_symmv_free(w4);
+		}
+	
 	fclose(f3);
 	fclose(f4);
 

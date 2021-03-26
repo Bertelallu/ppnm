@@ -38,10 +38,6 @@ timediagonalization.pyxplot.png: main Makefile
 	,"out_time_jacobiop.txt" using 1:2 with line title "Our optimized implementation"\
 	' | tee tmp.gpi | pyxplot
 
-#out_time_jacobi.txt: main functions.o
-#
-#out_time_gsl.txt: main functions.o
-
 eigenfunctions.txt: main
 
 out.txt: main 
@@ -49,7 +45,5 @@ out.txt: main
 
 main: main.o functions.o
 
-#main.o: main.c
-#
-#functions.o: functions.c
-
+clean:
+	$(RM) main main.o functions.o *.png *.txt *.gpi
