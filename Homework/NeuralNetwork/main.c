@@ -22,12 +22,16 @@ double activationfunction(double x){
 }
 
 double fittingfunction(double x){
-	return cos(x);
+//	return cos(x);
 //	return x*x;
-//	return cos(5*x-1)*exp(-x*x);
+	return cos(5*x-1)*exp(-fabs(x));
 }
 
-
+/*
+double fittingfunction(double x){
+	return 
+}
+*/
 gsl_vector * xfunc;
 gsl_vector * yexact;
 ann * network;
@@ -44,6 +48,9 @@ double cost_function(gsl_vector* p){
 		return sum/xfunc->size;
 }
 
+//double cost_functionC(gsl_vector* p){}
+	
+/*
 double CP(gsl_vector * params){
 	//vector_print("i CP:",params);
 	double sum=0;
@@ -62,6 +69,7 @@ double CP(gsl_vector * params){
 	//vector_print("ud CP:",params);
 	return 1/network->n*sum;
 }
+*/
 
 int main(){
 	int n=5; //number of neurons
@@ -86,8 +94,8 @@ int main(){
 		gsl_vector_set(xfunc,i,x);
 		gsl_vector_set(yexact,i,f);
 	}
-	//double test=ann_response(network,a);
-	//printf("%g",test);
+
+	
 	ann_train(network,xfunc,yexact);
 	
 	vector_print("network->params\n",network->params);
@@ -103,7 +111,7 @@ int main(){
 	for(int i=0;i<np;i++){
 		fprintf(f,"%g %g %g\n",gsl_vector_get(xfunc,i),gsl_vector_get(yexact,i),gsl_vector_get(ygaet,i));
 	}
-	double deltax=1.0/8;
+	double deltax=1.0/16;
 	FILE* f2=fopen("dataB.txt","w");
 	for(double step=a;step<=b;step+=deltax){
 		double gradient=ann_gradient(network,step);
@@ -112,8 +120,12 @@ int main(){
 		double exactvalue=fittingfunction(step);
 		fprintf(f2,"%g %g %g %g %g\n",step,gradient,value,integral,exactvalue);
 	}
-	
-	
+	/*
+	//initial conditions:
+	double yc=;
+	double ycm=;
+	printf("-u=u''=0");
+	*/
 	
 return 0;
 }

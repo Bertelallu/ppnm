@@ -37,9 +37,7 @@ double ann_response(ann* network,double x){
 }
 
 
-double activationfunctiongradient(double x){
-	return -exp(-(x*x))*(2*x*x-1);
-}
+
 double ann_gradient(ann* network,double x){
 	double sum=0;
 	for(int i=0; i<network->n;i++){
@@ -47,22 +45,19 @@ double ann_gradient(ann* network,double x){
 		double bi=gsl_vector_get(network->params,i*3+1);
 		double wi=gsl_vector_get(network->params,i*3+2);
 		sum+=wi*(exp(-(x-ai)*(x-ai)/(bi*bi))/bi-2.0*(x-ai)*(x-ai)*exp(-(x-ai)*(x-ai)/(bi*bi))/bi/bi/bi);
-		//sum+=activationfunctiongradient((x-ai)/bi)*wi;
 		}
 	return sum;
 }
 
 
-double activationfunctionintegral(double x){
-	return -exp(-(x*x))/2.0;
-}
 double ann_integral(ann* network,double x){
 	double sum=0;
 	for(int i=0; i<network->n;i++){
 		double ai=gsl_vector_get(network->params,i*3);
 		double bi=gsl_vector_get(network->params,i*3+1);
 		double wi=gsl_vector_get(network->params,i*3+2);
-		sum+=activationfunctionintegral((x-ai)/bi)*wi;
+		//sum+=activationfunctionintegral((x-ai)/bi)*wi;
+		sum+=-0.5*bi*exp(-(ai-x)*(ai-x)/(bi*bi))*wi;
 		}
 	return sum;
 }
@@ -78,5 +73,14 @@ void ann_train(ann* network,gsl_vector* xfunc,gsl_vector* yexact){
 
 }
 
-
+/*
+void ann_trainC(ann* network,gsl_vector* xfunc,gsl_vector* yexact){
+	double eps=0.01;
+	gsl_vector *p=gsl_vector_alloc(network->params->size);
+	gsl_vector_memcpy(p,network->params);
+	qnewton(cost_function,p,eps);
+	gsl_vector_memcpy(network->params,p);
+	gsl_vector_free(p);
+}
+*/
 
