@@ -20,8 +20,8 @@ double quad_diff(qspline *s,double z);
 
 
 double cubic_spline_eval(cubic_spline*s, double z);
-//double cubic_integ();
-//double cubic_diff();
+double cubic_integ(cubic_spline*s, double z);
+double cubic_diff(cubic_spline*s, double z);
 
 void quad_spline_free(qspline *s);
 void cubic_spline_free(cubic_spline *s);
@@ -76,8 +76,8 @@ int main(){
 	FILE * f=fopen("linterp.dat","w");
 	double z=gsl_vector_get(x,0);
 	qspline *s=qspline_alloc(x,y);
-//cubic_spline *ss=cubic_spline_alloc(x,y);
-	for((z=z);z<=N;z+=1./8){
+	cubic_spline *ss=cubic_spline_alloc(x,y);
+	for((z=z);z<=N;z+=1./16){
 		double yiz=linterp(x,y,z);
 		double integraltilz=linterp_integ(x,y,z);
 		double quadterp=qspline_eval(s,z);
@@ -85,8 +85,10 @@ int main(){
 		double quadterpdiffiz=quad_diff(s,z);
 		double interp_l=gsl_interp_eval(linear,gslx,gsly,z,NULL);
 		double integ_l=gsl_interp_eval_integ(linear,gslx,gsly,gslx[0],z,NULL);
-//double cubicterp=cubic_spline_eval(ss,z);
-		fprintf(f,"%g %g %g %g %g %g %g %g\n",z,yiz,integraltilz,quadterp,quadterptilz,quadterpdiffiz,interp_l,integ_l);
+		double cubicterp=cubic_spline_eval(ss,z);
+		double cubicterpdiffiz=cubic_diff(ss,z);
+		double cubicterptilz=cubic_integ(ss,z);
+		fprintf(f,"%g %g %g %g %g %g %g %g %g %g %g\n",z,yiz,integraltilz,quadterp,quadterptilz,quadterpdiffiz,interp_l,integ_l,cubicterp,cubicterpdiffiz,cubicterptilz);
 		}
 	fclose(f);
 

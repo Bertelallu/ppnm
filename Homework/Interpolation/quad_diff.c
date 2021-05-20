@@ -10,6 +10,6 @@ double quad_diff(qspline *s, double Z){
 	double xi=gsl_vector_get(s->x,maxinterval);
 	double ci=gsl_vector_get(s->c,maxinterval);
 	double bi=gsl_vector_get(s->b,maxinterval);
-	double diff=bi+ci*(Z-xi);
+	double diff=bi+2*ci*(Z-xi);
 return diff;
 }

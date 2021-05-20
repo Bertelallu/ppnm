@@ -36,4 +36,5 @@ double qspline_eval(qspline *s, double z){
 	return gsl_vector_get(s->y,index)+h*(gsl_vector_get(s->b,index)+h*gsl_vector_get(s->c,index));
 }
 void quad_spline_free(qspline *s){
-	free(s->x); free(s->y); free(s->b); free(s->x); free(s);}
+	gsl_vector_free(s->x); gsl_vector_free(s->y); gsl_vector_free(s->b); gsl_vector_free(s->x);
+}
