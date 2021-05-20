@@ -71,6 +71,8 @@ int main(){
 	gsl_interp* linear= gsl_interp_alloc(gsl_interp_linear,N);
 	gsl_interp_init(linear,gslx,gsly,N);
 
+	gsl_interp* cubic=gsl_interp_alloc(gsl_interp_cspline,N);
+	gsl_interp_init(cubic,gslx,gsly,N);
 //A linear, quad, and cubic interpolation is done on the points loaded in vectors x and y.
 //The values are written into a file linterp.dat. Along with the integral top that point.
 	FILE * f=fopen("linterp.dat","w");
@@ -88,7 +90,10 @@ int main(){
 		double cubicterp=cubic_spline_eval(ss,z);
 		double cubicterpdiffiz=cubic_diff(ss,z);
 		double cubicterptilz=cubic_integ(ss,z);
-		fprintf(f,"%g %g %g %g %g %g %g %g %g %g %g\n",z,yiz,integraltilz,quadterp,quadterptilz,quadterpdiffiz,interp_l,integ_l,cubicterp,cubicterpdiffiz,cubicterptilz);
+		double interp_cubic=gsl_interp_eval(cubic,gslx,gsly,z,NULL);
+		double integ_cubic=gsl_interp_eval_integ(cubic,gslx,gsly,gslx[0],z,NULL);
+		double diff_cubic=gsl_interp_eval_deriv(cubic,gslx,gsly,z,NULL);
+		fprintf(f,"%g %g %g %g %g %g %g %g %g %g %g %g %g %g\n",z,yiz,integraltilz,quadterp,quadterptilz,quadterpdiffiz,interp_l,integ_l,cubicterp,cubicterpdiffiz,cubicterptilz,interp_cubic,integ_cubic,diff_cubic);
 		}
 	fclose(f);
 

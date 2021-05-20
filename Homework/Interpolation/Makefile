@@ -55,6 +55,9 @@ fig-cubicterp-pyxplot.png: linterp.dat
 	,"linterp.dat" using 1:9 with lines title "cubic interpolation" \
 	,"linterp.dat" using 1:10 with lines title "cubic differential" \
 	,"linterp.dat" using 1:11 with lines title "cubic integration" \
+	,"linterp.dat" using 1:12 with point title "cubic GSL interpolation" \
+	,"linterp.dat" using 1:13 with point title "cubic GSL integration" \
+	,"linterp.dat" using 1:14 with point title "cubic GSL derivative" \
 	' | tee tmp.gpi | pyxplot
 	
 linterp.dat: main
