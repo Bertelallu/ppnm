@@ -1,0 +1,28 @@
+calculation of first integral from z=1+i to z=3+3i
+number of recursive calls=0
+deepest depth of recursion=0
+integral of f(z)=z from z=1+i to z=3+3i is 0.000000+i8.000000
+number of calls to function=4
+
+
+calculation of second integral from z=0+0i to z=1+i
+number of recursive calls=63
+deepest depth of recursion=5
+integral of f(z)=Re(z)^2+i*Im(z) from z=0+0i to z=1+i is -0.166667+i0.833333
+number of calls to function=256
+
+
+calculation of third integral from z=1-i to z=2+i
+number of recursive calls=0
+deepest depth of recursion=0
+integral of f(z)=Re(z)*2+i*Im(z)+1 from z=1-i to z=2+i is 4.000000+i8.000000
+number of calls to function=4
+
+
+calculation of fourth integral from z=0+2i to z=2+2i
+number of recursive calls=84
+deepest depth of recursion=6
+integral of f(z)=cos(Re(z))+isin(Im(z)) from z=0+2i to z=2+2i is 0.909297+i1.818595
+number of calls to function=340
+
+

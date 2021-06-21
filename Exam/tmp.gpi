@@ -1,0 +1,14 @@
+\
+set sample grid 200x200;\
+set terminal png;\
+set output "complexplanef3.pyxplot.png";\
+set key bottom left;\
+set tics out;\
+set xlabel "Re";\
+set ylabel "Im";\
+set title "The complex plane of $f(z)=Re(z)*2+i*Im(z)+1$";\
+plot \
+"function3.txt" using 1:2:3 with colormap title ""\
+,"line3.txt" using 1:2 with lines title "integration line"\
+,"points3.txt" using 1:2 with points title "first 4 points used"\
+
