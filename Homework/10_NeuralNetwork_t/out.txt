@@ -1,0 +1,4 @@
+A and B
+interpolation using neural network
+the result of a interpolation on cos(5*x-1)*exp(-abs(x)) using activation function x*exp(-(x*x)) are shown in figure data.pyxplot.png
+implementation of gradient and antiderivative of integration are shown in figure dataB.pyxplot.png

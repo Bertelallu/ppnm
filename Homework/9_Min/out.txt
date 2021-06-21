@@ -1,0 +1,47 @@
+A
+
+Finds minimum of f(x)=(x+4)^2+7 using Quasi-newton
+Number of iterations = 2
+x =
+        -4 
+Exact minimum x=-4
+
+Finds minimum of f(x,y) = x^4+3*y^2 using Quasi-newton
+Number of iterations = 132
+x_f2 =
+-0.0348037 
+-0.000163221 
+Exact minimum (0,0)
+
+Finds minimum of Rosenbrock's valley function: f(x,y)=(1-x)^2+100*(y-x^2)^2 using Quasi-newton
+Number of iterations = 310
+x_rose =
+  0.999867 
+  0.999735 
+Exact minimum (1,1)
+
+Finds minimum of Himmelblau's valley function: f(x,y)=(x^2+y-11)^2+(x+y^2-7)^2 using Quasi-newton
+Number of iterations = 66
+x_Himmel =
+   3.58443 
+  -1.84816 
+Exact minimum both (3,2), (-2.805,3.131), (-3.779, -3.283) and (3.584, -1.848)
+
+
+B
+Fits the data with Brei-Wigner function by minimizing the deviation function in the task description
+Number of iterations = 932
+x_BW =
+   125.972 
+    2.0892 
+   9.89027 
+
+Thus, the mass of the boson is 125.97 +- 2.0892 GeV/c^2
+Result from 2012: 125.3 +- 0.6 GeV/c^2
+
+
+C
+Finds minimum of the Rosenbrock function using downhill simplex
+Minimum (x,y) = (0.999999, 0.999999)
+Iterations = 84
+Exact result (1,1)

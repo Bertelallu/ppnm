@@ -1,0 +1,10 @@
+for the function f(x)=sin(x)^2
+Plain MC gives integral=1.571075134981207988005281, error=0.003510315492135600030226827
+Quasi-random MC gives integral=1.570796326794896557998982, error=1.110223024625156540423632e-16
+actual results=1.570796326794896557998982
+
+The proposed integral is calculated;
+Plain MC gives integral=1.39438449697478294986297, error=0.02572123317759381425084975
+Quasi-random MC gives integral=1.382293351914715806572076, error=0.0002085638922123614347192699
+actual results=1.3932039296856768591842462603255
+Regarding comparison; From both figures it is clear that quasi-random provides lower estimated errors.

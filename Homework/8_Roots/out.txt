@@ -1,0 +1,29 @@
+A
+Finds roots of the function: f(x)=(x+4)^2 using Newton's method
+x_root =
+  -3.99121 
+Exact result=-4 
+
+
+Finds extremums of Rosenbrock's valley function f(x,y)=(1-x)^2+100*(y-x^2)^2 
+x_min =
+         1 
+         1 
+Exact result= (1,1) 
+
+
+B
+Finds the lowest root ε0 of the equation M(ε)=0 for rmax = 8
+ε0 =
+ -0.499975 
+Exact result=-1/2 
+The resulting function are plotted in Hydrogen.pyxplot.png along with the exact function
+
+
+C
+Uses the boundary condition f(rmax)=0 to investigate convergence of the solution as a function of rmax
+Convergence shown in C1.pyxplot.png
+Uses the boundary condition f(rmax->infinity)= r*exp(-k*r) instead, where k = sqrt(-2ε)
+Convergence shown in C2.pyxplot.png
+Compared in C1AndC2.pyxplot.png
+It is clear that C2 converges faster

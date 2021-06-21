@@ -1,0 +1,9 @@
+A and B
+results are shown in Path_u_uprime.pyxplot.png
+Uses routines on SIR model of epidemic devolpment 
+results are shown in PathSIR.pyxplot.png
+
+
+ C 
+Uses routines on Newtonian gravitational three-body problem 
+results are shown in PathNewton.pyxplot.png and Figure8_Newton.pyxplot.png

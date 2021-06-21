@@ -1,0 +1,60 @@
+A
+Integration function infitegrate is implemented in functions.c
+
+Integration of sqrt(x) from 0 to 1 with eps = 0.001 and accuracy = 0.001
+Calculated, Q = 0.66695 
+Exact = 0.666667
+Number of calls = 16
+Estimated error = 0.00166695
+Actual error = 0.000287242
+
+Integration of 4*sqrt(1-x*x) from 0 to 1 with eps = 0.001 and accuracy = 0.001
+Calculated, Q = 3.1418 
+Exact = 3.14159
+Number of calls = 28
+Estimated error = 0.00414183
+Actual error = 0.000241924
+
+Integration of log(x)/sqrt(x) from 0 to 1 with eps = 0.001 and accuracy = 0.001
+Calculated, Q = -3.9999 
+Exact = -4
+Number of calls = 8604
+Estimated error = 0.00499992
+Actual error = 8.2941e-05
+
+
+B
+Implements Clenshaw Curtis variable transformation
+
+Integration of log(x)/sqrt(x) from 0 to 1 with eps = 0.001 and accuracy = 0.001 using CC variable transformation
+Calculates new limits: a = 0, b = 1.5708
+Calculated, Q = -3.9999 
+Exact = -4
+Number of calls = 556
+Estimated error = 0.00499993
+Actual error = 6.60286e-05
+Number of calls lowered by a factor of approximately 15 
+
+Comparisson with GSL:
+Calculated, Q = -4 
+Exact = -4
+Number of calls = 315
+Estimated error = 0.005
+Actual error = 7.99547e-11
+
+
+Task C: Infinite limits
+
+Integration of 2.0/(1.0 + 2*x*x) from 0 to inf with eps = 0.001 and accuracy = 0.001
+Calculated, Q = 2.2216 
+Exact = 2.22144
+Number of calls = 20
+Estimated error = 0.0032216
+Actual error = 0.000161672
+
+Comparisson with GSL routine
+Calculated, Q = 2.2214 
+Exact = 2.22144
+Number of calls = 15
+Estimated error = 0.00322144
+Actual error = 1.46918e-06
